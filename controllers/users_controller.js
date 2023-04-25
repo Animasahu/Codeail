@@ -47,5 +47,39 @@ module.exports.create = function(req, res){
 
 //sign in and create a session for the user
 module.exports.createSession = function(req , res){
-    //TODO later
+    //steps to authenticate
+    //find the user
+    User.findOne({email: req.body.email} , function(err,user){
+        if(err){console.log('error in finding user in signing in'); return}
+        //handle user found
+
+        if(user){
+             //handle password which do't match
+             if(user.password != req.body.password){
+                return res.redirect('back');
+             }
+              //handle session creation
+             res.cookie('user_id', user.id);
+             return res.redirect('/uesrs/profile');
+        } else{
+             //handle user not found
+             return res.redirect('back');
+        }
+    });
+ 
+}
+
+//User Sign Out
+module.exports.destroysession = (req, res) => {
+    try {
+        //Predefined by passport to clear session
+        req.logout(function (err) {
+            if (err) { return next(err); }
+        });
+        // res.clearCookie('social_palace')
+        // req.flash('success', 'user successfully logged out')
+        return res.redirect('/');
+    } catch (error) {
+        console.log(error);
+    }
 }
