@@ -9,6 +9,9 @@ module.exports.profile = function(req , res){
 
 //render the sign up page
 module.exports.signUp= function(req , res){
+    if(req.isAuthenticated()){
+       return  res.redirect('/users/profile');
+    }
     return res.render('user_sign_up', {
         title: "Codeial | Sign Up"
     })
@@ -16,6 +19,9 @@ module.exports.signUp= function(req , res){
 
 //render the sign in page
 module.exports.signIn = function(req ,res){
+    if(req.isAuthenticated()){
+        return res.redirect('/users/profile');
+    }
     return res.render('user_sign_in',{
         title: "Codeial | Sign In"
     })
@@ -47,39 +53,52 @@ module.exports.create = function(req, res){
 
 //sign in and create a session for the user
 module.exports.createSession = function(req , res){
+    return res.redirect('/');
     //steps to authenticate
     //find the user
-    User.findOne({email: req.body.email} , function(err,user){
-        if(err){console.log('error in finding user in signing in'); return}
-        //handle user found
+    // User.findOne({email: req.body.email} , function(err,user){
+    //     if(err){console.log('error in finding user in signing in'); return}
+    //     //handle user found
 
-        if(user){
-             //handle password which do't match
-             if(user.password != req.body.password){
-                return res.redirect('back');
-             }
-              //handle session creation
-             res.cookie('user_id', user.id);
-             return res.redirect('/uesrs/profile');
-        } else{
-             //handle user not found
-             return res.redirect('back');
-        }
-    });
+    //     if(user){
+    //          //handle password which do't match
+    //          if(user.password != req.body.password){
+    //             return res.redirect('back');
+    //          }
+    //           //handle session creation
+    //          res.cookie('user_id', user.id);
+    //          return res.redirect('/uesrs/profile');
+    //     } else{
+    //          //handle user not found
+    //          return res.redirect('back');
+    //     }
+    // });
  
 }
 
 //User Sign Out
-module.exports.destroysession = (req, res) => {
-    try {
-        //Predefined by passport to clear session
-        req.logout(function (err) {
-            if (err) { return next(err); }
-        });
-        // res.clearCookie('social_palace')
-        // req.flash('success', 'user successfully logged out')
-        return res.redirect('/');
-    } catch (error) {
-        console.log(error);
-    }
+// module.exports.destroysession = (req, res) => {
+//     try {
+//         //Predefined by passport to clear session
+//         req.logout(function (err) {
+//             if (err) { return next(err); }
+//         });
+//         // res.clearCookie('social_palace')
+//         // req.flash('success', 'user successfully logged out')
+//         return res.redirect('/');
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+//User sign out
+module.exports.destroySession = function(req, res){
+    //req.logout();
+    req.logout(function (err) {
+                    if (err) { return next(err); }
+                });
+
+    return res.redirect('/');
 }
+
+
